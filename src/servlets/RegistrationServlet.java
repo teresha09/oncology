@@ -46,7 +46,7 @@ public class RegistrationServlet extends HttpServlet {
         } else {
             resp.sendRedirect("/main");
         }
-        if (session.getAttribute("user_curent") == null) {
+        if (session.getAttribute("user_current") == null) {
             resp.setContentType("text/html");
             RequestDispatcher dispatcher = req.getRequestDispatcher("pages/registration.ftl");
             dispatcher.forward(req, resp);
@@ -63,9 +63,13 @@ public class RegistrationServlet extends HttpServlet {
             resp.sendRedirect("/main");
         } else {
             Part filePart = req.getPart("file");
-            Path f1 = Paths.get(filePart.getSubmittedFileName());
-            String filename = f1.getFileName().toString();
-            if (filename.equals("")) {
+            String localdir = "uploads";
+            String pathDir = getServletContext().getRealPath("") + File.separator + localdir;
+            File dir = new File(pathDir);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            if (filePart.getSubmittedFileName().equals("")) {
                 try {
                     new UserRepositoryImpl().create(new User(
                             0,
@@ -79,13 +83,11 @@ public class RegistrationServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             } else {
-                String[] filenames = filename.split("\\.");
-                InputStream fileContent = filePart.getInputStream();
-                File uploads = new File("D:\\testing\\cancer\\out\\artifacts\\cancer_war_exploded");
-                File file = File.createTempFile("img", "." + filenames[1], uploads);
-                Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                String[] help_me = file.getPath().split("/");
-                String need_path = "/cancer_war_exploded/" + file.getPath().split("\\\\")[6];
+                String[] filename_data = filePart.getSubmittedFileName().split("\\.");
+                String filename = Math.random() + "." + filename_data[filename_data.length - 1];
+                String fullpath = pathDir + File.separator + filename;
+                filePart.write(fullpath);
+                String photo_path = "/" + localdir + "/" + filename;
                 try {
                     new UserRepositoryImpl().create(new User(
                             0,
@@ -93,7 +95,7 @@ public class RegistrationServlet extends HttpServlet {
                             req.getParameter("surname"),
                             req.getParameter("email"),
                             req.getParameter("password"),
-                            need_path
+                            photo_path
                     ));
                 } catch (ClassNotFoundException | SQLException e) {
                     e.printStackTrace();
