@@ -58,7 +58,7 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-                User user = (User) session.getAttribute("current_user");
+        User user = (User) session.getAttribute("current_user");
         if (user != null) {
             resp.sendRedirect("/main");
         } else {

@@ -66,7 +66,18 @@ public class UserRepositoryImpl implements CrudRepository<User>{
 
     @Override
     public void update(User model) throws ClassNotFoundException, SQLException {
-
+        Class.forName("org.postgresql.Driver");
+        Connect conn = new Connect("jdbc:postgresql://localhost:5432/cancer", "postgres",
+                "2109");
+        PreparedStatement statement = conn.getConn().prepareStatement(
+                "UPDATE user_table SET name = ?, surname=?, email=?, password=?, images=? WHERE id=?");
+        statement.setString(1,model.getName());
+        statement.setString(2,model.getSurname());
+        statement.setString(3,model.getEmail());
+        statement.setString(4,model.getPassword());
+        statement.setString(5, model.getProfilePicture());
+        statement.setInt(6, model.getId());
+        statement.executeUpdate();
     }
 
     public User findUserByName(String name) throws SQLException, ClassNotFoundException {
