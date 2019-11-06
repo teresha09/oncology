@@ -35,6 +35,7 @@
                     <p>${User.getEmail()}</p>
                 </div>
             </#if>
+            <a href="/logout">Logout</a>
         </div>
     </div>
 </div>
