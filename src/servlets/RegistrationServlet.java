@@ -1,6 +1,8 @@
 package servlets;
 
+import Connect.Connect;
 import Connect.Render;
+import Connect.Password;
 import model.User;
 import repository.UserRepositoryImpl;
 import Connect.FreemarkerConfigurator;
@@ -20,12 +22,13 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @WebServlet("/registration")
 @MultipartConfig
 public class RegistrationServlet extends HttpServlet {
-
+    Map<String, Object> root = new HashMap<>();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         FreemarkerConfigurator.getInstance(this);
@@ -34,36 +37,30 @@ public class RegistrationServlet extends HttpServlet {
         root.put("context", req.getContextPath());
         resp.setCharacterEncoding("utf-8");
         User user = (User) session.getAttribute("current_user");
-        Cookie[] cookies = req.getCookies();
-        if (user == null && cookies != null) {
-            for (Cookie cookie: cookies) {
-                try {
-                    user = new UserRepositoryImpl().validateUser(cookie.getName(), cookie.getValue());
-                } catch (SQLException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            resp.sendRedirect("/main");
-        }
-        if (session.getAttribute("user_current") == null) {
-            resp.setContentType("text/html");
-            RequestDispatcher dispatcher = req.getRequestDispatcher("pages/registration.ftl");
-            dispatcher.forward(req, resp);
-        } else {
-            Render.render(req,resp,"registration.ftl", root);
-        }
+        Render.render(req, resp, "registration.ftl", root);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("current_user");
-        if (user != null) {
-            resp.sendRedirect("/main");
+        Part filePart = req.getPart("file");
+        String localdir = "uploads";
+        boolean error = false;
+        if (!(Pattern.matches("^[A-Za-zА-Яа-яЁё]+$", req.getParameter("name")) &&
+        Pattern.matches("^[A-Za-z]+$", req.getParameter("surname")))) {
+            root.put("Error", "Incorrect name or surname.Only English letters");
+            error = true;
+        }
+        System.out.println(req.getParameter("password"));
+        if (error &!(Pattern.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$" , req.getParameter("password")))) {
+            root.put("Error", "Password must contain at least one digit,at least one lower" +
+                    "case letter, at least one upper case letter, at eight symbols.No whitespace allowed");
+            error = true;
+        }
+        if (error) {
+            resp.sendRedirect("/registration");
         } else {
-            Part filePart = req.getPart("file");
-            String localdir = "uploads";
             String pathDir = getServletContext().getRealPath("") + File.separator + localdir;
             File dir = new File(pathDir);
             if (!dir.exists()) {
@@ -76,7 +73,7 @@ public class RegistrationServlet extends HttpServlet {
                             req.getParameter("name"),
                             req.getParameter("surname"),
                             req.getParameter("email"),
-                            req.getParameter("password"),
+                            Password.hasher(req.getParameter("password")),
                             null
                     ));
                 } catch (ClassNotFoundException | SQLException e) {
@@ -94,7 +91,7 @@ public class RegistrationServlet extends HttpServlet {
                             req.getParameter("name"),
                             req.getParameter("surname"),
                             req.getParameter("email"),
-                            req.getParameter("password"),
+                            Password.hasher(req.getParameter("password")),
                             photo_path
                     ));
                 } catch (ClassNotFoundException | SQLException e) {
@@ -106,7 +103,7 @@ public class RegistrationServlet extends HttpServlet {
             } catch (SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
+            resp.sendRedirect("/main");
         }
-        resp.sendRedirect("/main");
     }
 }

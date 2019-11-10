@@ -2,6 +2,7 @@ package servlets;
 
 import Connect.FreemarkerConfigurator;
 import Connect.Render;
+import Connect.Password;
 import model.User;
 import repository.UserRepositoryImpl;
 
@@ -18,77 +19,45 @@ import java.util.Map;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-
-    Map<String, Object> root = new HashMap<>();
+    public Map<String, Object> root = new HashMap<>();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         resp.setCharacterEncoding("utf-8");
-        User user = (User) session.getAttribute("current_user");
-        if (user != null) {
-            resp.sendRedirect("/main");
-        } else {
-            try {
-                String email = req.getParameter("email");
-                String password = req.getParameter("password");
-                User user1 = new UserRepositoryImpl().validateUser(email, password);
-                if (user1 != null) {
-                    if (req.getParameter("remember") != null) {
-                        Cookie cookieMail = new Cookie("emailcookie",email);
-                        Cookie cookiePassword = new Cookie("passwordcookie", password);
-                        cookieMail.setMaxAge(60 * 60 * 24 * 10000);
-                        cookiePassword.setMaxAge(60 * 60 * 24 * 10000);
-                        cookieMail.setPath("/");
-                        cookiePassword.setPath("/");
-                        resp.addCookie(cookieMail);
-                        resp.addCookie(cookiePassword);
-                    }
-                    session.setAttribute("current_user", user1);
-                    resp.sendRedirect("/main");
+        try {
+            String email = req.getParameter("email");
+            String password = req.getParameter("password");
+            User user = new UserRepositoryImpl().validateUser(email,Password.hasher(password));
+            if (user != null) {
+                if (req.getParameter("remember") != null) {
+                    Cookie cookieMail = new Cookie("emailcookie", email);
+                    Cookie cookiePassword = new Cookie("passwordcookie", Password.hasher(password));
+                    cookieMail.setMaxAge(60 * 60 * 24 * 10000);
+                    cookiePassword.setMaxAge(60 * 60 * 24 * 10000);
+                    cookieMail.setPath("/");
+                    cookiePassword.setPath("/");
+                    resp.addCookie(cookieMail);
+                    resp.addCookie(cookiePassword);
                 }
-            } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
+                session.setAttribute("current_user", user);
+                resp.sendRedirect("/profile");
             }
-            if (session.getAttribute("current_user") == null) {
-                root.put("Error", "No such user");
-                resp.sendRedirect("/login");
-            }
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (session.getAttribute("current_user") == null) {
+            root.put("Error", "No such user");
+            resp.sendRedirect("/login");
         }
     }
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         FreemarkerConfigurator.getInstance(this);
         HttpSession session = req.getSession();
-        Map<String, Object> root = new HashMap<>();
-        root.put("context", req.getContextPath());
-        resp.setCharacterEncoding("utf-8");
-        User user = (User) session.getAttribute("current_user");
-        Cookie[] cookies = req.getCookies();
-        String email = "";
-        String password = "";
-        if (user == null && cookies != null) {
-            for (Cookie cookie: cookies) {
-                if (cookie.getName().equals("emailcookie")){
-                    email = cookie.getValue();
-                }
-                if (cookie.getName().equals("passwordcookie")){
-                    password = cookie.getValue();
-                }
-            }
-            try {
-                user = new UserRepositoryImpl().validateUser(email, password);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        } if (user != null) {
-            session.setAttribute("current_user", user);
-            resp.sendRedirect("/profile");
-        } else {
-            Render.render(req,resp,"login.ftl", root);
-        }
+        Render.render(req, resp, "login.ftl", root);
     }
 }
+

@@ -34,7 +34,24 @@ public class UserRepositoryImpl implements CrudRepository<User>{
 
     @Override
     public User findByID(int ID) throws SQLException, ClassNotFoundException {
-        return null;
+        Class.forName("org.postgresql.Driver");
+        Connect conn = new Connect("jdbc:postgresql://localhost:5432/cancer", "postgres", "2109");
+        PreparedStatement statement = conn.getConn().prepareStatement("SELECT * FROM user_table where id = ?");
+        statement.setInt(1,ID);
+        ResultSet rs = statement.executeQuery();
+        if (rs.next()) {
+            conn.close();
+            return new User(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("surname"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getString("images"));
+        }else {
+            conn.close();
+            return null;
+        }
     }
 
     @Override

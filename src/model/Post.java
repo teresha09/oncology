@@ -6,12 +6,12 @@ public class Post {
     String title;
     String text;
     String Date;
-    int category;
-    int imagesRef;
+    String category;
+    String imagesRef;
     User user;
 
 
-    public Post(int id, String title, String text, String date, int category, int imagesRef, User user) {
+    public Post(int id, String title, String text, String date, User user, String imagesRef,String category) {
         this.id = id;
         this.title = title;
         this.text = text;
@@ -53,19 +53,19 @@ public class Post {
         Date = date;
     }
 
-    public int getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(int category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
-    public int getImagesRef() {
+    public String getImagesRef() {
         return imagesRef;
     }
 
-    public void setImagesRef(int imagesRef) {
+    public void setImagesRef(String imagesRef) {
         this.imagesRef = imagesRef;
     }
 

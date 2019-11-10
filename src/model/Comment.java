@@ -2,18 +2,27 @@ package model;
 
 public class Comment {
 
-    int id;
-    String text;
-    User user;
-    Post post;
+    private int id;
+    private String text;
+    private String date;
+    private User user;
+    private Post post;
 
-    public Comment(int id, String text, User user, Post post) {
+    public Comment(int id, String text,String date, User user, Post post) {
         this.id = id;
         this.text = text;
+        this.date = date;
         this.user = user;
         this.post = post;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public int getId() {
         return id;
