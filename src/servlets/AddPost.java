@@ -24,6 +24,7 @@ import java.util.Map;
 @WebServlet("/addpost")
 @MultipartConfig
 public class AddPost extends HttpServlet {
+    Map<String, Object> root = new HashMap<>();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -31,8 +32,7 @@ public class AddPost extends HttpServlet {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("current_user");
         FreemarkerConfigurator.getInstance(this);
-        Map<String, Object> root = new HashMap<>();
-        root.put("user", user);
+        root.put("User", user);
         Render.render(req, resp, "addpost.ftl", root);
 
     }

@@ -12,7 +12,7 @@ public class FreemarkerConfigurator {
 
     public FreemarkerConfigurator(HttpServlet servlet) {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
-        cfg.setServletContextForTemplateLoading(servlet.getServletContext(), "/pages");
+        cfg.setServletContextForTemplateLoading(servlet.getServletContext(), "WEB-INF/pages");
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         servlet.getServletContext().setAttribute("cfg", cfg);

@@ -63,17 +63,13 @@ public class EditProfile extends HttpServlet {
         if (email.equals("")) {
             email = user.getEmail();
         }
-        String password = req.getParameter("password");
-        if (password.equals("")) {
-            password = user.getPassword();
-        }
         try {
             new UserRepositoryImpl().update(new User(
                     user.getId(),
                     name,
                     surname,
                     email,
-                    password,
+                    user.getPassword(),
                     photo_path
             ));
         } catch (ClassNotFoundException | SQLException e) {

@@ -47,7 +47,7 @@ public class RegistrationServlet extends HttpServlet {
         Part filePart = req.getPart("file");
         String localdir = "uploads";
         boolean error = false;
-        if (!(Pattern.matches("^[A-Za-zА-Яа-яЁё]+$", req.getParameter("name")) &&
+        if (!(Pattern.matches("^[A-Za-z]+$", req.getParameter("name")) ||
         Pattern.matches("^[A-Za-z]+$", req.getParameter("surname")))) {
             root.put("Error", "Incorrect name or surname.Only English letters");
             error = true;

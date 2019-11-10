@@ -57,6 +57,7 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         FreemarkerConfigurator.getInstance(this);
         HttpSession session = req.getSession();
+        resp.setCharacterEncoding("utf-8");
         Render.render(req, resp, "login.ftl", root);
     }
 }

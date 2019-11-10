@@ -22,16 +22,15 @@ import java.util.Map;
 @WebServlet("/post")
 @MultipartConfig
 public class PostServlet extends HttpServlet {
+    Map<String,Object> root = new HashMap<>();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         FreemarkerConfigurator.getInstance(this);
         resp.setCharacterEncoding("utf-8");
-        Map<String,Object> root = new HashMap<>();
+
         User user = (User) req.getSession().getAttribute("current_user");
-        if (user != null) {
-            root.put("user", user);
-        }
+        root.put("User", user);
         if (req.getParameter("id") != null) {
             try {
                 Post post = new PostRepositoryImpl().findByID(Integer.parseInt(req.getParameter("id")));
