@@ -85,8 +85,7 @@
                         </div>
                         <div class=" text-lg-right text-left col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12 mb-40 mb-xs-60">
                             <h4>Volzhsk, lalaland</h4>
-                            <font>egor@egor.com</font>
-                            <p><font>egor</font></p>
+                            <font>Designed by Syumbel</font>
                         </div>
                     </div>
                 </div>

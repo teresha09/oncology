@@ -17,7 +17,7 @@
                         if (msg.objects.length > 0) {
                             $("#res").html("");
                             for ( var i = 0; i < msg.objects.length; i++) {
-                                $("#res").append("<li>" + msg.objects[i].title + "</li>");
+                                $("#res").append("<li><a href=\"/post?id=" +  + msg.objects[i].id + "\">" + msg.objects[i].title + "</a>" + "</li>");
                             }
                         } else {
                             $("#res").html("No results..");

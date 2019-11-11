@@ -103,7 +103,7 @@ public class RegistrationServlet extends HttpServlet {
             } catch (SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            resp.sendRedirect("/main");
+            resp.sendRedirect("/profile");
         }
     }
 }
